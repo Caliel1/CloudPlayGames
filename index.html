@@ -518,16 +518,7 @@ const { useState, useEffect, useCallback } = React;
 const { createRoot } = ReactDOM;
 
 // ─── DADOS ─────────────────────────────────────────────────────────────────
-const GAMES = [
-  { id:1, title:'Cyberpunk 2099', genre:'RPG / Open World', price:199.90, oldPrice:299.90, rating:4.8, emoji:'🌆', badge:'sale', desc:'Uma megalópole futurista, missões infinitas e escolhas que moldam o destino.' },
-  { id:2, title:'Shadow Realms', genre:'Action RPG', price:149.90, rating:4.6, emoji:'⚔️', badge:'new', desc:'Dungeon crawler com mecânicas profundas e loot épico.' },
-  { id:3, title:'Starforge', genre:'Estratégia / Ficção', price:89.90, rating:4.7, emoji:'🚀', badge:null, desc:'Construa impérios galácticos e conquiste sistemas estelares.' },
-  { id:4, title:'Neon Racer X', genre:'Corrida / Arcade', price:59.90, rating:4.5, emoji:'🏎️', badge:'hot', desc:'Velocidade absurda em pistas neon de alta octanagem.' },
-  { id:5, title:'Phantom Protocol', genre:'Stealth / Thriller', price:129.90, oldPrice:179.90, rating:4.9, emoji:'🕵️', badge:'sale', desc:'Infiltre corporações em missões de espionagem complexas.' },
-  { id:6, title:'Dragon Citadel', genre:'Fantasy / MMORPG', price:0, rating:4.4, emoji:'🐉', badge:'new', desc:'Free-to-play massivo com batalhas de guild e dragões épicos.' },
-  { id:7, title:'Hex Dimension', genre:'Puzzle / Sci-Fi', price:39.90, rating:4.3, emoji:'🔮', badge:null, desc:'Quebra-cabeças dimensionais que distorcem a realidade.' },
-  { id:8, title:'Iron Vanguard', genre:'FPS / Tactical', price:179.90, rating:4.7, emoji:'🎯', badge:'hot', desc:'Shooter tático com classes únicas e mapas destrutíveis.' },
-];
+
 
 const CATEGORIES = [
   { name:'RPG', icon:'⚔️', count:42 },
@@ -607,10 +598,12 @@ function GameCard({ game, cart, setCart, wishlist, setWishlist }) {
 
   return React.createElement('div', { className:'game-card' },
     React.createElement('div', { className:'game-thumb' },
-      React.createElement('div', {
+     React.createElement('img', {
         className:'game-thumb-img',
-        style:{ background: colors[game.id % colors.length] }
-      }, game.emoji),
+        src: game.image,
+        alt: game.title,
+        style:{ objectFit: 'cover', background: '#12121f' }
+      }),
       game.badge && React.createElement('span', { className:`game-badge ${badgeClass}` },
         game.badge === 'new' ? 'NOVO' : game.badge === 'sale' ? 'OFERTA' : '🔥 HOT'
       ),
@@ -641,9 +634,8 @@ function GameCard({ game, cart, setCart, wishlist, setWishlist }) {
 }
 
 // ─── HOME PAGE ─────────────────────────────────────────────────────────────
-function HomePage({ setPage, cart, setCart, wishlist, setWishlist }) {
+function HomePage({ games, setPage, cart, setCart, wishlist, setWishlist, setGlobalFilter }) {
   return React.createElement('div', { className:'page' },
-    // HERO
     React.createElement('div', { className:'hero' },
       React.createElement('div', { className:'hero-bg' }),
       React.createElement('div', { className:'hero-grid' }),
@@ -662,7 +654,6 @@ function HomePage({ setPage, cart, setCart, wishlist, setWishlist }) {
         )
       )
     ),
-    // STATS
     React.createElement('div', { className:'stats-bar' },
       [['12.000+','Jogos'],['2.4M','Jogadores'],['98%','Satisfação'],['24/7','Suporte']].map(([n,l]) =>
         React.createElement('div', { key:l, className:'stat-item' },
@@ -671,27 +662,42 @@ function HomePage({ setPage, cart, setCart, wishlist, setWishlist }) {
         )
       )
     ),
-    // SECTION: DESTAQUE
     React.createElement('div', { className:'section' },
-      // FEATURED BANNER
-      React.createElement('div', { className:'featured-banner' },
+     React.createElement('div', { className:'featured-banner' },
         React.createElement('div', { className:'featured-content' },
           React.createElement('span', { className:'featured-tag' }, '🏆 JOGO DA SEMANA'),
-          React.createElement('h2', { className:'featured-title' }, 'Phantom Protocol'),
-          React.createElement('p', { className:'featured-desc' }, 'Infiltre corporações em missões de espionagem complexas. Stealth perfeito com IA dinâmica.'),
-          React.createElement('div', { className:'featured-price' }, 'R$ 129,90'),
+          React.createElement('h2', { className:'featured-title' }, 'Death Stranding Director\'s Cut'),
+          React.createElement('p', { className:'featured-desc' }, 'Reconecte uma sociedade fraturada entregando cargas essenciais em um mundo pós-apocalíptico deslumbrante e cheio de perigos sobrenaturais.'),
+          React.createElement('div', { className:'featured-price' }, 'R$ 159,90'),
           React.createElement('div', { style:{ display:'flex', gap:'0.75rem', alignItems:'center' } },
             React.createElement('button', {
               className:'btn-hero',
-              onClick:() => { setCart(prev => prev.some(c=>c.id===5)?prev:[...prev,{...GAMES[4],qty:1}]); showToast('Phantom Protocol no carrinho! 🕵️'); }
+              onClick:() => { 
+                const destaque = GAMES.find(g => g.id === 4); 
+                setCart(prev => prev.some(c=>c.id===4) ? prev : [...prev, {...destaque, qty:1}]); 
+                showToast('Death Stranding no carrinho! 📦'); 
+              }
             }, 'COMPRAR AGORA'),
-            React.createElement('span', { style:{ color:'var(--text-muted)', fontSize:'0.85rem' } }, '⭐ 4.9 — 18k reviews')
+            React.createElement('span', { style:{ color:'var(--text-muted)', fontSize:'0.85rem' } }, '⭐ 4.7 — 42k reviews')
           )
         ),
-        React.createElement('div', { className:'featured-emoji' }, '🕵️')
+        React.createElement('img', { 
+          src: 'https://image.api.playstation.com/vulcan/ap/rnd/202106/2214/UXDlNJfdtZJ080ONmH8q3CUX.png',
+          alt: 'Death Stranding Destaque',
+          style: { 
+            position: 'absolute', 
+            right: '2.5rem', 
+            top: '50%', 
+            transform: 'translateY(-50%)', 
+            height: '240px',
+            width: '180px',
+            borderRadius: '12px',
+            objectFit: 'cover',
+            boxShadow: '0 20px 40px rgba(0,0,0,0.5)',
+            zIndex: 0
+          } 
+        })
       ),
-
-      // MAIS VENDIDOS
       React.createElement('div', { className:'section-header' },
         React.createElement('h2', { className:'section-title' }, React.createElement('span',null,'//'), ' MAIS VENDIDOS'),
         React.createElement('span', { className:'see-all', onClick:()=>setPage('comprar') }, 'Ver todos →')
@@ -701,22 +707,18 @@ function HomePage({ setPage, cart, setCart, wishlist, setWishlist }) {
           React.createElement(GameCard, { key:g.id, game:g, cart, setCart, wishlist, setWishlist })
         )
       ),
-
-      // CATEGORIAS
       React.createElement('div', { className:'section-header', style:{ marginTop:'3rem' } },
         React.createElement('h2', { className:'section-title' }, React.createElement('span',null,'//'), ' CATEGORIAS')
       ),
       React.createElement('div', { className:'categories-grid' },
         CATEGORIES.map(c =>
-          React.createElement('div', { key:c.name, className:'cat-card', onClick:()=>setPage('comprar') },
+          React.createElement('div', { key:c.name, className:'cat-card', onClick:() => { setGlobalFilter(c.name); setPage('comprar'); } },
             React.createElement('div', { className:'cat-icon' }, c.icon),
             React.createElement('div', { className:'cat-name' }, c.name),
             React.createElement('div', { className:'cat-count' }, `${c.count} jogos`)
           )
         )
       ),
-
-      // LANÇAMENTOS
       React.createElement('div', { className:'section-header', style:{ marginTop:'3rem' } },
         React.createElement('h2', { className:'section-title' }, React.createElement('span',null,'//'), ' LANÇAMENTOS'),
         React.createElement('span', { className:'see-all', onClick:()=>setPage('comprar') }, 'Ver todos →')
@@ -790,28 +792,27 @@ function LoginPage({ setPage, setUser }) {
 }
 
 // ─── COMPRAR PAGE ──────────────────────────────────────────────────────────
-function ComprarPage({ cart, setCart, wishlist, setWishlist }) {
-  const [filter, setFilter] = useState('Todos');
+function ComprarPage({ games, cart, setCart, wishlist, setWishlist, globalFilter, setGlobalFilter }) {
   const [search, setSearch] = useState('');
-  const filters = ['Todos','RPG','Ação','FPS','Puzzle','Estratégia','Ofertas','Grátis'];
+  const filters = ['Todos','RPG','Ação','FPS','Puzzle','Estratégia','Terror','Esporte','Ofertas','Grátis'];
 
-  const filtered = GAMES.filter(g => {
+  const filtered = games.filter(g => {
     const matchSearch = g.title.toLowerCase().includes(search.toLowerCase()) || g.genre.toLowerCase().includes(search.toLowerCase());
-    if(filter==='Todos') return matchSearch;
-    if(filter==='Ofertas') return matchSearch && g.oldPrice;
-    if(filter==='Grátis') return matchSearch && g.price===0;
-    return matchSearch && g.genre.toLowerCase().includes(filter.toLowerCase());
+    if(globalFilter === 'Todos') return matchSearch;
+    if(globalFilter === 'Ofertas') return matchSearch && g.oldPrice;
+    if(globalFilter === 'Grátis') return matchSearch && g.price===0;
+    return matchSearch && g.genre.toLowerCase().includes(globalFilter.toLowerCase());
   });
 
   return React.createElement('div', { className:'page' },
     React.createElement('div', { className:'store-header' },
       React.createElement('h1', { className:'store-title' }, '🎮 Loja de Jogos'),
-      React.createElement('p', { className:'store-subtitle' }, `${GAMES.length} jogos disponíveis • Novidades toda semana`)
+      React.createElement('p', { className:'store-subtitle' }, `${games.length} jogos disponíveis • Novidades toda semana`)
     ),
     React.createElement('div', { className:'store-filters' },
       React.createElement('input', { className:'search-bar', placeholder:'🔍 Buscar jogos...', value:search, onChange:e=>setSearch(e.target.value) }),
       filters.map(f =>
-        React.createElement('button', { key:f, className:`filter-btn ${filter===f?'active':''}`, onClick:()=>setFilter(f) }, f)
+        React.createElement('button', { key:f, className:`filter-btn ${globalFilter===f?'active':''}`, onClick:()=>setGlobalFilter(f) }, f)
       )
     ),
     React.createElement('div', { className:'section' },
@@ -893,9 +894,17 @@ function PagamentoPage({ cart, setCart, setPage }) {
     setCart([]);
   };
 
-  const methods = [
+ const methods = [
     { id:'card', icon:'💳', label:'Cartão' },
-    { id:'pix', icon:'⚡', label:'PIX' },
+    { 
+      id:'pix', 
+      icon: React.createElement('img', { 
+        src: 'https://artpoin.com/wp-content/uploads/2023/09/artpoin-logo-pix.png', 
+        alt: 'Logo PIX', 
+        style: { width: '1.3rem', height: '1.3rem', objectFit: 'contain' } 
+      }), 
+      label:'PIX' 
+    },
     { id:'boleto', icon:'🧾', label:'Boleto' },
   ];
 
@@ -1093,29 +1102,50 @@ function Footer({ setPage }) {
 
 // ─── APP ROOT ──────────────────────────────────────────────────────────────
 function App() {
+
   const [page, setPage] = useState('home');
   const [cart, setCart] = useState([]);
   const [wishlist, setWishlist] = useState([]);
   const [user, setUser] = useState(null);
+  const [globalFilter, setGlobalFilter] = useState('Todos');
+
+  const [games, setGames] = React.useState([]); 
+
+
+  React.useEffect(() => {
+    fetch('http://localhost:3000/api/games')
+      .then(res => res.json())
+      .then(data => setGames(data))
+      .catch(err => console.error("Erro ao buscar jogos do back-end:", err));
+  }, []);
 
   useEffect(() => {
     window.history.pushState({}, '', '/' + (page === 'home' ? '' : page));
   }, [page]);
 
+
   const renderPage = () => {
     switch(page) {
-      case 'home':         return React.createElement(HomePage, { setPage, cart, setCart, wishlist, setWishlist });
-      case 'login':        return React.createElement(LoginPage, { setPage, setUser });
-      case 'comprar':      return React.createElement(ComprarPage, { cart, setCart, wishlist, setWishlist });
-      case 'lista-de-desejo': return React.createElement(WishlistPage, { wishlist, setWishlist, cart, setCart });
-      case 'pagamento':    return React.createElement(PagamentoPage, { cart, setCart, setPage });
-      case 'confirmacao':  return React.createElement(ConfirmacaoPage, { setPage });
-      default:             return React.createElement(HomePage, { setPage, cart, setCart, wishlist, setWishlist });
+      case 'home': 
+        return React.createElement(HomePage, { games, setPage, cart, setCart, wishlist, setWishlist, setGlobalFilter });
+      case 'comprar': 
+        return React.createElement(ComprarPage, { games, cart, setCart, wishlist, setWishlist, globalFilter, setGlobalFilter });
+      case 'login': 
+        return React.createElement(LoginPage, { setPage, setUser });
+      case 'lista-de-desejo': 
+        return React.createElement(WishlistPage, { wishlist, setWishlist, cart, setCart });
+      case 'pagamento': 
+        return React.createElement(PagamentoPage, { cart, setCart, setPage });
+      case 'confirmacao': 
+        return React.createElement(ConfirmacaoPage, { setPage });
+      default: 
+        return React.createElement(HomePage, { games, setPage, cart, setCart, wishlist, setWishlist, setGlobalFilter });
     }
   };
 
   const showFooter = !['login','pagamento','confirmacao'].includes(page);
 
+  // --- 5. RENDERIZAÇÃO FINAL ---
   return React.createElement(React.Fragment, null,
     React.createElement(Navbar, { page, setPage, cart, wishlist, user, setUser }),
     React.createElement('main', { className:'main' }, renderPage()),
